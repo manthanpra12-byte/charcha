@@ -51,7 +51,7 @@ const getTopicPosts = async (req, res) => {
   const topic = await Topic.findById(req.params.id);
   if (!topic) return res.status(404).json({ message: 'Topic not found' });
 
-  const result = await findPosts({ topic: topic._id }, req.query);
+    const result = await findPosts({ topic: topic._id }, req.query, req.user?._id);
   res.json(result);
 };
 

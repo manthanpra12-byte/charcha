@@ -59,15 +59,21 @@ const run = async () => {
     await Topic.updateOne({ _id: post.topic }, { $inc: { postCount: -1 } });
   }
 
-  // ---- 2. Undo the user's votes on other people's posts ----
+    // ---- 2. Undo the user's votes on other people's posts ----
   const votes = await Vote.find({ user: user._id });
   for (const vote of votes) {
-    await Post.updateOne({ _id: vote.post }, { $inc: { score: -vote.value } });
+    await Post.updateOne({ _id: vote.post }, { $inc: { score: -vote.value } }, { timestamps: false });
   }
   await Vote.deleteMany({ user: user._id });
 
   // ---- 3. Keep reply threads intact: hide the user's comments instead of deleting them ----
-  await Comment.updateMany({ author: user._id }, { content: '[deleted]', isDeleted: true });
+  const userComments = await Comment.find({ author: user._id, isDeleted: false });
+  for (const comment of userComments) {
+    comment.isDeleted = true;
+    comment.content = '[deleted]';
+    await comment.save();
+    await Post.updateOne({ _id: comment.post }, { $inc: { commentCount: -1 } }, { timestamps: false });
+  }
 
   // ---- 4. Remove reports the user filed ----
   await Report.deleteMany({ reportedBy: user._id });

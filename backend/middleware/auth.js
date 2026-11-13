@@ -24,12 +24,25 @@ const protect = async (req, res, next) => {
     return res.status(401).json({ message: 'User no longer exists' });
   }
 
-  req.user = user; // later handlers can use req.user
+  req.user = user;
   next();
 };
 
-// Allows the request only for the listed roles, e.g. authorize('admin')
-// Always use AFTER protect
+// For public routes: identifies the user if a valid token is sent, but never blocks the request
+const optionalAuth = async (req, res, next) => {
+  const header = req.headers.authorization || '';
+  if (header.startsWith('Bearer ')) {
+    try {
+      const decoded = jwt.verify(header.split(' ')[1], config.jwtSecret);
+      req.user = await User.findById(decoded.id);
+    } catch (error) {
+      // Invalid token: just continue as a guest
+    }
+  }
+  next();
+};
+
+// Allows the request only for the listed roles, e.g. authorize('admin'). Use AFTER protect.
 const authorize = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     return res.status(403).json({ message: 'You do not have permission to do this' });
@@ -37,4 +50,4 @@ const authorize = (...roles) => (req, res, next) => {
   next();
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, optionalAuth, authorize };

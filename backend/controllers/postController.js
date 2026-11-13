@@ -7,6 +7,7 @@ const findPosts = require('../utils/findPosts');
 const { isString, isValidId } = require('../utils/validators');
 
 const POST_TYPES = ['discussion', 'question'];
+const addUserVotes = require('../utils/addUserVotes');
 
 // Returns an error message, or null if the input is valid
 const validatePost = ({ title, content, postType }) => {
@@ -30,11 +31,12 @@ const populatePost = (post) =>
   ]);
 
 // GET /api/posts?sort=popular&page=2&limit=10&search=cloud&topic=<id>
+// GET /api/posts?sort=popular&page=2&limit=10&search=cloud&topic=<id>
 const getPosts = async (req, res) => {
   const filter = {};
   if (isValidId(req.query.topic)) filter.topic = req.query.topic;
 
-  const result = await findPosts(filter, req.query);
+  const result = await findPosts(filter, req.query, req.user?._id);
   res.json(result);
 };
 
@@ -42,9 +44,12 @@ const getPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   const post = await Post.findById(req.params.id)
     .populate('author', 'name')
-    .populate('topic', 'title');
+    .populate('topic', 'title')
+    .lean();
   if (!post) return res.status(404).json({ message: 'Post not found' });
-  res.json({ post });
+
+  const [postWithVote] = await addUserVotes([post], req.user?._id);
+  res.json({ post: postWithVote });
 };
 
 // POST /api/posts  (logged in)
