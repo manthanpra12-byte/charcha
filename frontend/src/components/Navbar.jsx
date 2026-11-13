@@ -28,7 +28,9 @@ export default function Navbar() {
                 <NavLink to="/feed" className={linkClass}>Feed</NavLink>
                 <NavLink to="/topics" className={linkClass}>Topics</NavLink>
                 <Link to="/posts/new" className="btn-primary hidden px-3 py-1.5 sm:inline-flex">+ Create post</Link>
-                <span className="hidden text-sm text-slate-300 md:inline">Hi, {user.name}</span>
+                                <NavLink to={`/users/${user._id}`} className={linkClass}>
+                  👤 <span className="hidden md:inline">{user.name}</span>
+                </NavLink>
                 {user.role === 'admin' && (
                   <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-300">ADMIN</span>
                 )}

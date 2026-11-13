@@ -77,7 +77,15 @@ export default function PostDetails() {
 
                 <h1 className="mt-3 text-2xl font-bold text-navy-900 sm:text-3xl">{post.title}</h1>
                 <p className="mt-2 text-sm text-slate-500">
-                  Posted by <span className="font-medium text-slate-700">{post.author?.name || 'Deleted user'}</span> ·{' '}
+                                    Posted by{' '}
+                  {post.author ? (
+                    <Link to={`/users/${post.author._id}`} className="font-medium text-slate-700 hover:text-orange-600 hover:underline">
+                      {post.author.name}
+                    </Link>
+                  ) : (
+                    <span className="font-medium text-slate-700">Deleted user</span>
+                  )}{' '}
+                  ·{' '}
                   {formatDate(post.createdAt)}
                   {post.updatedAt !== post.createdAt && ' · edited'}
                 </p>

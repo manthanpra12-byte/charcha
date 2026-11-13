@@ -77,7 +77,7 @@ export default function PostFeed({ endpoint, createLink = '/posts/new' }) {
         <EmptyState
           title={search ? 'No posts match your search' : 'No posts yet'}
           text={search ? 'Try different words. Search matches whole words in titles and content.' : 'Be the first to start a discussion.'}
-          action={!search && <Link to={createLink} className="btn-primary">Create the first post</Link>}
+          action={!search && createLink && <Link to={createLink} className="btn-primary">Create the first post</Link>}
         />
       )}
 

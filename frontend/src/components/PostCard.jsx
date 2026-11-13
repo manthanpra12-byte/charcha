@@ -23,7 +23,13 @@ export default function PostCard({ post }) {
             {post.postType === 'question' && (
               <span className="rounded-full bg-orange-100 px-2.5 py-0.5 font-semibold text-orange-700">Question</span>
             )}
-            <span>by {post.author?.name || 'Deleted user'}</span>
+                        {post.author ? (
+              <Link to={`/users/${post.author._id}`} className="hover:text-orange-600 hover:underline">
+                by {post.author.name}
+              </Link>
+            ) : (
+              <span>by Deleted user</span>
+            )}
             <span>·</span>
             <span>{timeAgo(post.createdAt)}</span>
           </div>

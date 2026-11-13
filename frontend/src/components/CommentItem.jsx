@@ -3,6 +3,7 @@ import api, { getErrorMessage } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { timeAgo } from '../utils/formatDate';
 import CommentForm from './CommentForm';
+import { Link } from 'react-router-dom';
 
 // Shows one comment, then its replies, each rendered by this same component
 export default function CommentItem({ comment, postId, depth = 0, onChanged }) {
@@ -35,7 +36,13 @@ export default function CommentItem({ comment, postId, depth = 0, onChanged }) {
   return (
     <div className={wrapperClass}>
       <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-        <span className="font-semibold text-slate-700">{comment.author?.name || '[deleted]'}</span>
+                {comment.author ? (
+          <Link to={`/users/${comment.author._id}`} className="font-semibold text-slate-700 hover:text-orange-600 hover:underline">
+            {comment.author.name}
+          </Link>
+        ) : (
+          <span className="font-semibold text-slate-400">[deleted]</span>
+        )}
         <span>·</span>
         <span>{timeAgo(comment.createdAt)}</span>
       </div>

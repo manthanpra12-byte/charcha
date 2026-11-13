@@ -10,6 +10,7 @@ import TopicPage from './pages/TopicPage';
 import PostForm from './pages/PostForm';
 import PostDetails from './pages/PostDetails';
 import NotFound from './pages/NotFound';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/posts/new" element={<PostForm key="create" />} />
           <Route path="/posts/:id" element={<PostDetails />} />
           <Route path="/posts/:id/edit" element={<PostForm key="edit" />} />
+                    <Route path="/users/:id" element={<Profile />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

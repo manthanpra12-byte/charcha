@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const topicRoutes = require('./routes/topicRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const userRoutes = require('./routes/userRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/topics', topicRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/users', userRoutes);
 
 // 4. Error handling (must be last)
 app.use(notFound);
