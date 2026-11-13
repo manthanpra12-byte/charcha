@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
 import { timeAgo } from '../utils/formatDate';
+import VoteButtons from './VoteButtons';
 
 export default function PostCard({ post }) {
   return (
     <article className="card p-5 transition-colors hover:border-orange-300">
       <div className="flex gap-4">
-        {/* Score column: becomes the vote buttons in Milestone 5 */}
-        <div className="flex w-12 shrink-0 flex-col items-center pt-1 text-center">
-          <span className="text-lg font-bold text-navy-900">{post.score}</span>
-          <span className="text-xs text-slate-400">score</span>
+        <div className="shrink-0">
+          <VoteButtons postId={post._id} initialScore={post.score} initialVote={post.userVote} />
         </div>
 
         <div className="min-w-0 flex-1">
