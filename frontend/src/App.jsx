@@ -5,6 +5,10 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Feed from './pages/Feed';
+import Topics from './pages/Topics';
+import TopicPage from './pages/TopicPage';
+import PostForm from './pages/PostForm';
+import PostDetails from './pages/PostDetails';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -19,9 +23,13 @@ export default function App() {
         {/* Logged-in users only */}
         <Route element={<ProtectedRoute />}>
           <Route path="/feed" element={<Feed />} />
+          <Route path="/topics" element={<Topics />} />
+          <Route path="/topics/:id" element={<TopicPage />} />
+          <Route path="/posts/new" element={<PostForm key="create" />} />
+          <Route path="/posts/:id" element={<PostDetails />} />
+          <Route path="/posts/:id/edit" element={<PostForm key="edit" />} />
         </Route>
 
-        {/* Anything else */}
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
