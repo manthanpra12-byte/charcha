@@ -20,9 +20,11 @@ const topicSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    postCount: { type: Number, default: 0 }, 
   },
   { timestamps: true }
 );
+
 
 // Unique title, ignoring upper/lower case ("Gaming" and "gaming" count as the same)
 topicSchema.index({ title: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });

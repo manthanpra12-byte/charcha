@@ -5,6 +5,8 @@ const { rateLimit } = require('express-rate-limit');
 const config = require('./config/env'); // load configuration first
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const topicRoutes = require('./routes/topicRoutes');
+const postRoutes = require('./routes/postRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -36,6 +38,8 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/topics', topicRoutes);
+app.use('/api/posts', postRoutes);
 
 // 4. Error handling (must be last)
 app.use(notFound);
