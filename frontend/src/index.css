@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* Charcha brand colours, usable as bg-navy-900, text-navy-900, etc. */
+@theme {
+  --color-navy-950: #070f24;
+  --color-navy-900: #0b1736;
+  --color-navy-800: #12224a;
+  --color-navy-700: #1b3263;
+}
+
+/* Reusable classes, so button and card styles are written only once */
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-outline-light {
+    @apply inline-flex items-center justify-center rounded-lg border border-white/30 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10;
+  }
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+}
