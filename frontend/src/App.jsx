@@ -11,6 +11,7 @@ import PostForm from './pages/PostForm';
 import PostDetails from './pages/PostDetails';
 import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   return (
@@ -30,6 +31,11 @@ export default function App() {
           <Route path="/posts/:id" element={<PostDetails />} />
           <Route path="/posts/:id/edit" element={<PostForm key="edit" />} />
                     <Route path="/users/:id" element={<Profile />} />
+        </Route>
+
+                {/* Admins only */}
+        <Route element={<ProtectedRoute adminOnly />}>
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

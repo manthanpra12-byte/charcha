@@ -31,8 +31,17 @@ export default function Navbar() {
                                 <NavLink to={`/users/${user._id}`} className={linkClass}>
                   👤 <span className="hidden md:inline">{user.name}</span>
                 </NavLink>
-                {user.role === 'admin' && (
-                  <span className="rounded bg-orange-500/20 px-2 py-0.5 text-xs font-semibold text-orange-300">ADMIN</span>
+                                {user.role === 'admin' && (
+                  <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                      `rounded px-2 py-0.5 text-xs font-semibold ${
+                        isActive ? 'bg-orange-500 text-white' : 'bg-orange-500/20 text-orange-300 hover:bg-orange-500/30'
+                      }`
+                    }
+                  >
+                    ADMIN
+                  </NavLink>
                 )}
                 <button onClick={handleLogout} className="btn-outline-light px-3 py-1.5">Log out</button>
               </>

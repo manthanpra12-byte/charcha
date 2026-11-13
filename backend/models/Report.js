@@ -7,6 +7,7 @@ const reportSchema = new mongoose.Schema(
       ref: 'Post',
       required: true,
     },
+    postTitle: { type: String, default: '' }, 
     reportedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

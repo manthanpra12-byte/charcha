@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { formatDate } from '../utils/formatDate';
 import VoteButtons from '../components/VoteButtons';
 import CommentSection from '../components/CommentSection';
+import ReportPostForm from '../components/ReportPostForm';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 
@@ -17,11 +18,13 @@ export default function PostDetails() {
   const [post, setPost] = useState(null);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [reporting, setReporting] = useState(false);
 
   useEffect(() => {
     let ignore = false;
     setPost(null);
     setError('');
+    setReporting(false);
     api
       .get(`/posts/${id}`)
       .then((res) => { if (!ignore) setPost(res.data.post); })
@@ -77,7 +80,7 @@ export default function PostDetails() {
 
                 <h1 className="mt-3 text-2xl font-bold text-navy-900 sm:text-3xl">{post.title}</h1>
                 <p className="mt-2 text-sm text-slate-500">
-                                    Posted by{' '}
+                  Posted by{' '}
                   {post.author ? (
                     <Link to={`/users/${post.author._id}`} className="font-medium text-slate-700 hover:text-orange-600 hover:underline">
                       {post.author.name}
@@ -85,24 +88,34 @@ export default function PostDetails() {
                   ) : (
                     <span className="font-medium text-slate-700">Deleted user</span>
                   )}{' '}
-                  ·{' '}
-                  {formatDate(post.createdAt)}
+                  · {formatDate(post.createdAt)}
                   {post.updatedAt !== post.createdAt && ' · edited'}
                 </p>
 
-                {/* whitespace-pre-line keeps the line breaks the author typed */}
                 <div className="mt-6 whitespace-pre-line break-words leading-relaxed text-slate-800">{post.content}</div>
               </div>
             </div>
 
-            {(isOwner || isAdmin) && (
-              <div className="mt-8 flex justify-end gap-2 border-t border-slate-100 pt-4">
+            <div className="mt-8 border-t border-slate-100 pt-4">
+              <div className="flex flex-wrap justify-end gap-2">
+                {/* Anyone except the author can report a post */}
+                {!isOwner && !reporting && (
+                  <button type="button" onClick={() => setReporting(true)} className="btn-secondary">🚩 Report</button>
+                )}
                 {isOwner && <Link to={`/posts/${post._id}/edit`} className="btn-secondary">Edit</Link>}
-                <button type="button" onClick={handleDelete} disabled={deleting} className="btn-danger">
-                  {deleting ? 'Deleting...' : 'Delete'}
-                </button>
+                {(isOwner || isAdmin) && (
+                  <button type="button" onClick={handleDelete} disabled={deleting} className="btn-danger">
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                )}
               </div>
-            )}
+
+              {reporting && (
+                <div className="mt-4">
+                  <ReportPostForm postId={post._id} onClose={() => setReporting(false)} />
+                </div>
+              )}
+            </div>
           </article>
 
           <CommentSection postId={post._id} />

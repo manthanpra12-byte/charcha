@@ -8,6 +8,7 @@ const { isString, isValidId } = require('../utils/validators');
 
 const POST_TYPES = ['discussion', 'question'];
 const addUserVotes = require('../utils/addUserVotes');
+const removePostAndData = require('../utils/removePost');
 
 // Returns an error message, or null if the input is valid
 const validatePost = ({ title, content, postType }) => {
@@ -102,6 +103,7 @@ const updatePost = async (req, res) => {
 };
 
 // DELETE /api/posts/:id  (owner or admin)
+// DELETE /api/posts/:id  (owner or admin)
 const deletePost = async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post) return res.status(404).json({ message: 'Post not found' });
@@ -112,14 +114,8 @@ const deletePost = async (req, res) => {
     return res.status(403).json({ message: 'You can only delete your own posts' });
   }
 
-  // Remove everything that belongs to this post, so no orphan data is left behind
-  await Promise.all([
-    Comment.deleteMany({ post: post._id }),
-    Vote.deleteMany({ post: post._id }),
-    Report.deleteMany({ post: post._id }),
-  ]);
-  await post.deleteOne();
-  await Topic.updateOne({ _id: post.topic }, { $inc: { postCount: -1 } });
+  await removePostAndData(post);
+  await Report.deleteMany({ post: post._id }); // a normal delete also clears its reports
 
   res.json({ message: 'Post deleted' });
 };
