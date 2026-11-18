@@ -10,7 +10,7 @@ export default function Layout() {
         <Outlet /> {/* the current page is rendered here */}
       </main>
       <footer className="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
-        © {new Date().getFullYear()} Charcha · Cloud-Based Community Discussion Platform
+           © {new Date().getFullYear()} Charcha · Cloud-Based Community Discussion Platform · Deployed on AWS via GitHub Actions
       </footer>
     </div>
   );

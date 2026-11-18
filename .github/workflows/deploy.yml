@@ -19,7 +19,7 @@ jobs:
   # ---------------- Job 1: CI (build and check) ----------------
   build:
     name: Build & check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out the code
         uses: actions/checkout@v5
