@@ -1,0 +1,85 @@
+name: CI/CD - Build and Deploy Charcha
+
+# When does this run?
+on:
+  push:
+    branches: [main]      # every push to the main branch
+  workflow_dispatch:      # plus a manual "Run workflow" button on GitHub
+
+# Never run two deployments at the same time
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+# The workflow only needs to read the code
+permissions:
+  contents: read
+
+jobs:
+  # ---------------- Job 1: CI (build and check) ----------------
+  build:
+    name: Build & check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js 24 (same version as the server)
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Backend - install dependencies
+        working-directory: backend
+        run: npm ci --omit=dev
+
+      - name: Backend - syntax check every JavaScript file
+        working-directory: backend
+        run: find . -name "*.js" -not -path "./node_modules/*" -print0 | xargs -0 -n1 node --check
+
+      - name: Frontend - install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend - production build
+        working-directory: frontend
+        run: npm run build
+
+  # ---------------- Job 2: CD (deploy to AWS) ----------------
+  deploy:
+    name: Deploy to AWS EC2
+    needs: build              # runs ONLY if "Build & check" succeeded
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up the SSH key and the server's identity
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.EC2_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Run the deploy script on the server
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+              -o StrictHostKeyChecking=yes \
+              -o ConnectTimeout=20 \
+              "$EC2_USER@$EC2_HOST" "bash ~/charcha/deploy.sh"
+
+      - name: Check the live site over HTTPS
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: curl -fsS "https://$EC2_HOST/api/health"
+
+      - name: Remove the SSH key from the runner
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
